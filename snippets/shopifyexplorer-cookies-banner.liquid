@@ -1,0 +1,133 @@
+<!-- ShopifyExplorer - Add an EU cookies banner to your website without app -->
+{% comment %}Define variables{% endcomment %}
+{% assign text_1 = "We use cookies to ensure that we give you the best experience on our website. If you continue we'll assume that you understand this. To find out more please see our " %}
+{% assign text_2 = "and " %}
+{% assign more_info_1 = "Privacy Policy" %}
+{% assign more_info_2 = "Terms of Service" %}
+{% assign privacy_url = "https://www.thrift.plus/pages/data-policy" %}
+{% assign terms_url = "https://thrift.plus/pages/terms-and-conditions" %}
+{% assign button_text = "Accept" %}
+ 
+<style type="text/css">
+    @-webkit-keyframes slideUp{
+        0%{
+            -webkit-transform:translateY(66px);
+            transform:translateY(66px)
+        }
+        100%{
+            -webkit-transform:translateY(0);
+            transform:translateY(0)
+        }
+    }
+    @keyframes slideUp{
+        0%{
+            -webkit-transform:translateY(66px);
+            -ms-transform:translateY(66px);
+            transform:translateY(66px)
+        }
+        100%{
+            -webkit-transform:translateY(0);
+            -ms-transform:translateY(0);
+            transform:translateY(0)
+        }
+    }
+    #se-cookies-message {
+        color: #000; /* Change text color here */
+        background-color: #fff; /* Change background color here */
+        padding: 10px;
+        text-align: center;
+        position: fixed;
+        bottom:0px;
+        left:0;
+        right:0;
+        z-index: 100000;
+        box-shadow: 0 0 5px rgba(0,0,0,0.4);
+        opacity: 0;
+        visibility: hidden;
+        font-size: 12px;
+    }
+    #se-cookies-message.se-cookies-message-open {
+        opacity: 1;
+        visibility: visible;
+         
+        animation-duration:0.8s;
+        -webkit-animation-duration:0.8s;
+        -moz-animation-duration:0.8s;
+        -o-animation-duration:0.8s;
+        -webkit-animation-name:slideUp;
+        animation-name:slideUp;
+ 
+        display: -webkit-box;
+        display: -moz-box;
+        display: -ms-flexbox;
+        display: -webkit-flex;
+        display: flex;
+ 
+        -webkit-align-items: center;
+        -moz-align-items: center;
+        -ms-align-items: center;
+        -o-align-items: center;
+        -ms-flex-align: center;
+        align-items: center;
+ 
+        -webkit-justify-content: space-between;
+        -moz-justify-content: space-between;
+        -ms-justify-content: space-between;
+        -o-justify-content: space-between;
+        justify-content: space-between;
+    }
+    #se-accept-cookies-checkbox {
+        color: #fff; /* Change button text color here */
+        background-color: #FA4D08; /* Change button background color here */
+        transition: background 200ms ease-in-out,color 200ms ease-in-out,box-shadow 200ms ease-in-out;
+        -webkit-transition: background 200ms ease-in-out,color 200ms ease-in-out,box-shadow 200ms ease-in-out;
+        border-radius: 5px;
+        -webkit-border-radius: 5px;
+        text-decoration: none;
+        font-size: 12px;
+        padding: 8px 15px;
+    }
+    #se-accept-cookies-checkbox:hover {
+        opacity: 0.8;
+    }
+    .se-cookies-text {
+        padding-right: 15px;
+    }
+    @media screen and (min-width: 768px) {
+        #se-cookies-message {
+            padding: 15px 30px;
+            font-size: 17px;
+        }
+        #se-accept-cookies-checkbox {
+            font-size: 16px;
+            padding: 8px 30px;
+        }
+        .se-cookies-text {
+            padding-right: 0;
+        }
+    }
+</style>
+     
+<div id="se-cookies-message-container">
+    <div id="se-cookies-message">
+        <div class="se-cookies-text">
+            {{text_1}} <a href="{{privacy_url}}">{{more_info_1}}</a> {{text_2}} <a href="{{terms_url}}">{{more_info_2}}</a>
+        </div>
+        <a href="javascript:SHOPIFYEXPLORER_CloseCookiesWindow();" id="se-accept-cookies-checkbox">{{button_text}}</a>
+    </div>
+</div>
+ 
+<script>
+    function SHOPIFYEXPLORER_CheckCookies(){
+        if(!localStorage.cookies_accepted) {
+            var cookies_message = document.getElementById("se-cookies-message");
+            cookies_message.className += " se-cookies-message-open"
+        }
+    }
+    function SHOPIFYEXPLORER_CloseCookiesWindow(){
+        localStorage.cookies_accepted = true;
+        document.getElementById("se-cookies-message-container").removeChild(document.getElementById("se-cookies-message"));
+    }
+         
+    window.onload = SHOPIFYEXPLORER_CheckCookies;
+</script>

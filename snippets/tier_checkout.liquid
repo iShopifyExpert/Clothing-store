@@ -1,0 +1,17 @@
+{% if customer %}
+{% if product.tags contains "Quality_Designer" and customer.tags contains "smile_gold" %}
+<span>Show Gold Checkout</span>
+{% else %}
+	{% if product.tags contains "Quality_Premium" and customer.tags contains "smile_gold" or "smile_silver" %}
+	<span>Show Silver Checkout</span>
+	{% else %}
+		{% if product.tags contains "Quality_High Street" %}
+		<span>Show Bronze Checkout</span>
+		{% else %}
+		<span>How do I unlock this item?</span>
+		{% endif %}
+	{% endif %}
+{% endif %}
+{% else %}
+<span>Sign in</span>
+{% endif %}

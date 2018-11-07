@@ -1,0 +1,35 @@
+<form class="product__form" id="product{{ product.id }}__form" action="/cart/add" method="POST" style="position:relative; max-width:700px; margin-top: 10px;
+    margin-right: auto;
+    margin-bottom: 30px;
+    margin-left: auto;
+	padding: 20px;"
+>
+  <div class="product__variants">
+    {% if product.variants.size > 1 %}
+      <div class="form__control">
+        <div class="styled-select">
+          <select id="product-select-{{ product.id }}" name="id">
+            {% for variant in product.variants %}
+              <option {% if variant == product.selected_or_first_available_variant %} selected="selected" {% endif %} value="{{ variant.id }}" data-sku="{{ variant.sku }}">{{ variant.title }} - {{ variant.price | money }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+    {% else %}
+      <input type="hidden" name="id" data-sku="{{ product.selected_or_first_available_variant.sku }}" value="{{ product.selected_or_first_available_variant.id }}">
+    {% endif %}
+  </div>
+
+  <div class="product__buy">
+    
+
+    {% if product.selected_or_first_available_variant.available %}
+      <button type="submit" class="button button--primary button--no-disabled-opacity product__add-to-cart" style="font-size: 16px;
+    font-family: 'Open Sans', sans-serif !important;
+    font-weight: 400;
+" {% if settings.cart_page != 'page' %}data-action="add-to-cart"{% endif %}>{{ 'Order Now' }}</button>
+    {% else %}
+      <button type="submit" class="button button--secondary button--no-disabled-opacity product__add-to-cart" disabled="disabled">{{ 'product.labels.sold_out' | t }}</button>
+    {% endif %}
+  </div>
+</form>
