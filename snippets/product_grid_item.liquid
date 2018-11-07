@@ -45,16 +45,16 @@
         <div class="product-item__label">
           <span class="label label--on-sale">{{ 'product.labels.on_sale' | t }}</span>
         </div>
-      
+
       {% endif %}
     </div>
 
     <a href="{{ product.url | within: collection }}" class="product-item__image">
       <div class="product-item__image-wrapper">
         <img src="{{ product.featured_image | img_url: image_size }}" alt="{{ product.featured_image.alt }}">
-     
+
       </div>
-      
+
     </a>
 
     <div class="product-item__info">
@@ -67,6 +67,18 @@
       <h2 class="product-item__title">
         <a href="{{ product.url | within: collection }}">{{ product.title }}</a>
       </h2>
+
+      {% for tag in product.tags %}
+          <!-- <p>Tag: <a href="/collections/all/{{ tag | handleize }}">{{ tag }}</a></p> -->
+          {% if tag contains 'Brand_' %}
+            <p>Tag: <a href="/collections/all/{{ tag | handleize }}">{{ tag }}</a></p>
+          {% endif %}
+          {% if tag contains 'Thrift_Loves' %}
+            <div class="product-item__label label--thrift__wrapper">
+              <span class="label label--thrift_loves"></span>
+            </div>
+          {% endif %}
+      {% endfor %}
 
       {% if product_on_sale %}
         <span class="product-item__price product-item__price--new" data-money-convertible>{{ product.first_available_variant.price | money }}</span>
