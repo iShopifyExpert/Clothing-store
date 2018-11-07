@@ -3,7 +3,7 @@
 <!--[if IE 9 ]><html class="no-js csscalc no-flexbox ie9"><![endif]-->
 <!--[if (gt IE 9)|!(IE)]><!--><html class="no-js"><!--<![endif]-->
   <head>
-    <meta charset="utf-8"> 
+    <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, height=device-height, minimum-scale=1.0, user-scalable=0">
 
@@ -31,6 +31,7 @@
     {{ content_for_header }}
 
     {{ 'theme.scss.css' | asset_url | stylesheet_tag }}
+    {{ 'new-design-styles.scss.css' | asset_url | stylesheet_tag }}
 
     <script>
       // This allows to expose several variables to the global scope, to be used in scripts
@@ -66,10 +67,10 @@
 
     {% include 'microdata_schema' %}
   {% include 'sca-quick-view-init' %}
- 
+
   {% include 'shogun-head' %}
 {% include 'collection-filter-v2' %}
-    
+
 </head>
 
   {% assign template_handle = template | replace: '.', ' ' | truncatewords: 1, '' | handle %}
@@ -134,23 +135,23 @@
     <!--[if IE 9]>
       {{ 'polyfills-ie9.js' | asset_url | script_tag }}
     <![endif]-->
-  {% include 'sca-quick-view-template' %} 
- 
+  {% include 'sca-quick-view-template' %}
+
 {% include 'swymSnippet' %}
 
 <!-- BEEKETINGSCRIPT CODE START -->{% include 'bk-tracking' %}<!-- BEEKETINGSCRIPT CODE END --><!-- Start of HubSpot Embed Code -->
   <script type="text/javascript" id="hs-script-loader" async defer src="//js.hs-scripts.com/4516313.js"></script>
 <!-- End of HubSpot Embed Code -->
-  
-<!-- Cookies banner code start -->  
+
+<!-- Cookies banner code start -->
 {% include 'shopifyexplorer-cookies-banner' %}
-<!-- Cookies banner code end --> 
+<!-- Cookies banner code end -->
 
- 
 
- 
 
- 
+
+
+
 
  {% include 'smile-initializer' %}
 
@@ -206,5 +207,3 @@
         <!-- End-MakeAnOffer -->
 
 </html>
-
-        
