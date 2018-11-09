@@ -147,13 +147,12 @@
 {% include 'shopifyexplorer-cookies-banner' %}
 <!-- Cookies banner code end -->
 
-
-
-
-
-
-
  {% include 'smile-initializer' %}
+
+ {% if template contains 'collection' %}
+   {% include 'report_issue' %}
+ {% endif %}
+
 
 </body>
 <!-- Start-MakeAnOffer version: 5 -->
