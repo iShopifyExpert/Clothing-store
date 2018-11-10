@@ -123,8 +123,8 @@ BCSfFilter.prototype.buildProductGridItem = function(data, index) {
   // Add Vendor
   itemHtml = itemHtml.replace(/{{itemVendor}}/g, buildVendor(data));
   // itemActiveSwapClass
-  var itemActiveSwapClass = bcSfFilterConfig.custom.active_image_swap ? 'has-bc-swap-image' : '';
-  itemHtml = itemHtml.replace(/{{itemActiveSwapClass}}/g, itemActiveSwapClass);
+  // var itemActiveSwapClass = bcSfFilterConfig.custom.active_image_swap ? 'has-bc-swap-image' : '';
+  // itemHtml = itemHtml.replace(/{{itemActiveSwapClass}}/g, itemActiveSwapClass);
 
   // Add data json
   var self = this;
@@ -203,8 +203,8 @@ BCSfFilter.prototype.buildProductListItem = function(data) {
   itemDescription = (itemDescription.split(" ")).length > 40 ? itemDescription.split(" ").splice(0, 40).join(" ") + '...' : itemDescription.split(" ").splice(0, 40).join(" ");
   itemHtml = itemHtml.replace(/{{itemDescription}}/g, itemDescription);
   // itemActiveSwapClass
-  var itemActiveSwapClass = bcSfFilterConfig.custom.active_image_swap ? 'has-bc-swap-image' : '';
-  itemHtml = itemHtml.replace(/{{itemActiveSwapClass}}/g, itemActiveSwapClass);
+  // var itemActiveSwapClass = bcSfFilterConfig.custom.active_image_swap ? 'has-bc-swap-image' : '';
+  // itemHtml = itemHtml.replace(/{{itemActiveSwapClass}}/g, itemActiveSwapClass);
   // Add main attribute
   itemHtml = itemHtml.replace(/{{itemTitle}}/g, data.title);
   itemHtml = itemHtml.replace(/{{itemVendorLabel}}/g, data.vendor);
@@ -252,10 +252,10 @@ function buildImages(data) {
   var thumbUrl = images.length > 0 ? bcsffilter.optimizeImage(images[0]['src']) : bcSfFilterConfig.general.no_image_url;
   html += '<img src="' + thumbUrl + '" class="bc-sf-filter-product-item-main-image" />';
   // Build Image Swap
-  if (bcSfFilterConfig.custom.active_image_swap) {
-    var flipImageUrl = images.length > 1 ? bcsffilter.optimizeImage(images[1]['src']) : thumbUrl;
-    html += '<img src="' + flipImageUrl + '" class="bc-sf-filter-product-item-flip-image" />';
-  }
+  // if (bcSfFilterConfig.custom.active_image_swap) {
+  //   var flipImageUrl = images.length > 1 ? bcsffilter.optimizeImage(images[1]['src']) : thumbUrl;
+  //   html += '<img src="' + flipImageUrl + '" class="bc-sf-filter-product-item-flip-image" />';
+  // }
   return html;
 }
 

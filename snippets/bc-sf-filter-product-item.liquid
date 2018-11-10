@@ -25,16 +25,16 @@
 {% comment %} Soldout {% endcomment %}
 {% assign sold_out = false %}
 {% assign sold_out_class = '' %}
-{% assign sold_out_text = section.settings.soldout_label %} 
+{% assign sold_out_text = section.settings.soldout_label %}
 {% unless product.available %}
   {% assign sold_out = true %}
-  {% assign sold_out_class = 'sold-out' %}  
+  {% assign sold_out_class = 'sold-out' %}
 {% endunless %}
 
 {% comment %} On Sale {% endcomment %}
 {% assign on_sale = false %}
 {% assign sale_class = '' %}
-{% assign sale_text = section.settings.sale_label %} 
+{% assign sale_text = section.settings.sale_label %}
 {% if product.compare_at_price > product.price %}
   {% assign on_sale = true %}
   {% assign sale_class =  'on-sale' %}
@@ -57,18 +57,15 @@
 {% endif %}
 
 
-<div class="bc-sf-filter-product-item bc-sf-filter-product-item-grid {% if section.settings.active_image_swap and product.images[1] %} has-bc-swap-image{% endif %} {{ grid_width_class_desktop }} {{ grid_width_class_mobile }} {{ sold_out_class }} {{ sale_class }}">
+<div class="bc-sf-filter-product-item bc-sf-filter-product-item-grid {{ grid_width_class_desktop }} {{ grid_width_class_mobile }} {{ sold_out_class }} {{ sale_class }}">
       {% comment %} BoostCommerce product item JSON data {% endcomment %}
       {% include 'bc-sf-filter-json', product: product %}
-  
+
     <div class="bc-sf-filter-product-item-inner">
 
         <div class="bc-sf-filter-product-item-image">
           <a href="{{ product.url | within: collection }}" class="bc-sf-filter-product-item-image-link">
             <img src="{{ img_url }}" class="bc-sf-filter-product-item-main-image" alt="{{ product.featured_image.alt | escape }}" />
-            {% if section.settings.active_image_swap and product.images[1] %}
-            <img src="{{ swap_img_url }}" class="bc-sf-filter-product-item-flip-image" alt="{{ product.featured_image.alt | escape }}" />
-          {% endif %}
           </a>
         </div>
 
