@@ -85,7 +85,6 @@ This file can be re-written at any time.
 
 
 
-
 <body class="kagami--v4 template-{{ template_handle }} {% if page.template_suffix != blank %}template-{{ template_handle }}-{{page.template_suffix}}{% endif %}">
   
   
@@ -155,7 +154,7 @@ This file can be re-written at any time.
       background: white !important;
     }
   </style>
-  
+  {{ content_for_header }}
 </body>
 
 <!-- Start-MakeAnOffer version: 5 -->
