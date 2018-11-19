@@ -1,4 +1,108 @@
 /**
+ * Plugin to handle the Google Map
+ */
+
+(function ($) {
+
+  'use strict';
+
+  var pluginName = 'themeMap',
+    namespace = 'plugin_' + pluginName;
+
+  /**
+   * The Plugin constructor
+   * @constructor
+   * @param {HTMLElement} element The element that will be monitored
+   */
+  function Plugin(element) {
+    this.mapContainer = $(element);
+    this.googleMap = this.mapContainer.find('.featured-map__gmap').get(0);
+    this.options = JSON.parse(this.mapContainer.attr('data-section-settings'));
+
+    if (this.options['apiKey'] && this.options['mapAddress']) {
+      this._initMap();
+    }
+  }
+
+  Plugin.prototype._initMap = function() {
+    var geocoder = new google.maps.Geocoder(),
+      self = this;
+
+    geocoder.geocode({ address: this.options['mapAddress'] }, function(results, status) {
+      if (status !== google.maps.GeocoderStatus.OK) {
+        if (Shopify.designMode) {
+
+        }
+      } else {
+        var mapOptions = {
+          zoom: self.options['zoom'],
+          center: results[0].geometry.location,
+          draggable: false,
+          clickableIcons: false,
+          scrollwheel: false,
+          disableDoubleClickZoom: true,
+          disableDefaultUI: true
+        };
+
+        var map = new google.maps.Map(self.googleMap, mapOptions);
+        var center = map.getCenter();
+
+        map.setCenter(center);
+
+        var icon = {
+          path: "M32.7374478,5.617 C29.1154478,1.995 24.2994478,0 19.1774478,0 C14.0544478,0 9.23944778,1.995 5.61744778,5.617 C-1.08555222,12.319 -1.91855222,24.929 3.81344778,32.569 L19.1774478,54.757 L34.5184478,32.6 C40.2734478,24.929 39.4404478,12.319 32.7374478,5.617 Z M19.3544478,26 C15.4954478,26 12.3544478,22.859 12.3544478,19 C12.3544478,15.141 15.4954478,12 19.3544478,12 C23.2134478,12 26.3544478,15.141 26.3544478,19 C26.3544478,22.859 23.2134478,26 19.3544478,26 Z",
+          fillColor: {{settings.accent_color | json}},
+          fillOpacity: 1,
+          anchor: new google.maps.Point(15,55),
+          strokeWeight: 0,
+          scale: 1
+        };
+
+        new google.maps.Marker({
+          map: map,
+          position: map.getCenter(),
+          icon: icon
+        });
+
+        self._adjustMapPosition(map);
+
+        google.maps.event.addDomListener(window, 'resize', function() {
+          google.maps.event.trigger(map, 'resize');
+          map.setCenter(center);
+          self._adjustMapPosition(map);
+        });
+      }
+    });
+  };
+
+  Plugin.prototype._adjustMapPosition = function(map) {
+    if (window.matchMedia('screen and (max-width: 499px)').matches) {
+      map.panBy(0, -165);
+    } else {
+      map.panBy(-150, 0);
+    }
+  };
+
+  $.fn[pluginName] = function(options) {
+    var method = false,
+      methodArgs = arguments;
+
+    if (typeof options == 'string') {
+      method = options;
+    }
+
+    return this.each(function() {
+      var plugin = $.data(this, namespace);
+
+      if (!plugin && !method) {
+        $.data(this, namespace, new Plugin(this, options));
+      } else if (method) {
+        callMethod(plugin, method, Array.prototype.slice.call(methodArgs, 1));
+      }
+    });
+  };
+}(jQuery));
+/**
  * Plugin to handle mini cart
  */
 
@@ -235,6 +339,11 @@
     this.body.toggleClass('no-scroll');
 
     if (this.navigationSidebar.hasClass('navigation-sidebar--open')) {
+      // This allows to fix an issue on Safari where the list may not be focused
+      this.navigationSidebar.one('transitionend webkitTransitionEnd oTransitionEnd', function() {
+        $('.navigation-sidebar__list--active').focus();
+      });
+
       this.pageOverlay.one('click', $.proxy(this.closeNavigationSidebar, this));
     } else {
       this.pageOverlay.off('click');
@@ -256,7 +365,7 @@
       nextLevel = this.navigationSidebar.find('[data-nav-for="' + subNav + '"]');
 
     // We need to take the next nav, and push it
-    nextLevel.addClass('navigation-sidebar__list--active').attr('data-parent-nav', currentLevel.attr('data-nav-for'));
+    nextLevel.addClass('navigation-sidebar__list--active');
     currentLevel.addClass('navigation-sidebar__list--hidden');
 
     $('[data-action="close-navigation-sidebar"]').hide();
@@ -274,8 +383,8 @@
     this.navigationCurrentLevel.removeClass('navigation-sidebar__list--active');
     parentLevel.removeClass('navigation-sidebar__list--hidden');
 
-    // If the current navigation level is 1, this means that the next one is 0, so we show again the cross
-    if (parentLevel.attr('data-nav-for') === 'main-menu') {
+    // If parent level does not have any parent, this means we're back to the first one
+    if (!parentLevel.attr('data-parent-nav')) {
       $('[data-action="close-navigation-sidebar"]').show();
       $('[data-action="rewind-navigation-sidebar"]').hide();
       this.navigationSidebarCurrent.text('');
@@ -327,6 +436,10 @@
   function Plugin(element, options) {
     this.element = $(element);
     this.options = options;
+    this.product = this.options['product'];
+    this.singleOptionSelectors = this.element.find('.single-option-selector');
+    this.masterSelector = this.element.find('#product-select-' + this.product['id']);
+    this.currentVariant = this._getVariantFromOptions();
 
     this._init();
 
@@ -339,73 +452,92 @@
   }
 
   Plugin.prototype._init = function() {
-    var product = this.options['product'];
-
-    if (product['variants'].length > 1) {
-      new Shopify.OptionSelectors('product-select-' + product['id'], {
-        product: product,
-        onVariantSelected: $.proxy(this.onVariantSelected, this),
-        enableHistoryState: this.options['enableHistoryState']
-      });
-
-      // In our design, the label of dropdown is embedded into the select, so we need to do a bit of JavaScript it
-      this.element.find('.selector-wrapper').append('<svg class="icon icon-dropdown-arrow"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-dropdown-arrow"></use></svg>');
-
-      this.element.find('.single-option-selector').each(function (index) {
-        var spanToInsert = $('<span class="option-selector__label">' + product['options'][index] + ': </span>');
-        $(this).after(spanToInsert).css('padding-left', 28 + spanToInsert.outerWidth() + 'px');
-      });
-    }
+    this.singleOptionSelectors.on('change', $.proxy(this._onSelectorChanged, this));
 
     // We hook into the "add to cart" button to asynchronously add the product
-    this.element.find('[data-action="add-to-cart"]').on('click', $.proxy(this.addToCart, this));
+    this.element.find('[data-action="add-to-cart"]').on('click', $.proxy(this._addToCart, this));
+
+    // In Kagami, the label appears inside the selector box. In order to achieve this, we must use JavaScript to calculate the width of the label
+    // and applying a padding on the values. We cannot do that in pure Liquid as the width of a text depends on the characters used and the font
+    for (var i = 0 ; i !== this.product['options'].length ; ++i) {
+      this.element.find('.single-option-selector').each(function(index, item) {
+        $(item).css('padding-left', 28 + $(item).next('.option-selector__label').outerWidth() + 'px');
+      });
+    }
   };
 
-  Plugin.prototype.onVariantSelected = function(variant) {
+  /**
+   * ---------------------------------------------------------------------------------------------------
+   * CODE THAT HANDLE VARIANT CHANGES IN THE FRONT
+   * ---------------------------------------------------------------------------------------------------
+   */
+
+  /**
+   * Whenever the variant changes, we have several things to update: the slideshow image, the prices,
+   * the labels...
+   */
+  Plugin.prototype._onVariantChanged = function(previousVariant, newVariant) {
     var productMeta = this.element.find('.product-meta'),
       productMetaPrices = productMeta.find('.product-meta__prices'),
       productMetaLabels = productMeta.find('.product-meta__labels'),
-      addToCartButton = this.element.find('.product__add-to-cart');
+      addToCartButton = this.element.find('.product__add-to-cart'),
+      shopifyPaymentButton = this.element.find('.shopify-payment-button');
 
     // For the various meta, as they depend on the variant status, we always remove them to start with
     productMeta.find('.product-meta__price, .label:not(.label--custom)').remove();
 
     // Okay, we have a lot of things to do. First, let's check if we have a valid variant
-    if (variant) {
+    if (newVariant) {
       // If the variant is not available, it's just a sold out
-      if (!variant['available']) {
-        addToCartButton.removeClass('button--primary').addClass('button--secondary').attr('disabled', 'disabled').text(window.languages.soldOutLabel);
+      if (!newVariant['available']) {
+        addToCartButton.removeClass('button--primary button--secondary').addClass('button--secondary').attr('disabled', 'disabled').text(window.languages.soldOutLabel);
+        shopifyPaymentButton.hide();
+
         productMetaLabels.append('<span class="label label--sold-out">' + window.languages.soldOutLabel + '</span>');
       } else {
-        addToCartButton.removeClass('button--secondary').addClass('button--primary').removeAttr('disabled').text(window.languages.addToCartLabel);
+        addToCartButton.removeClass('button--primary button--secondary').addClass(this.options['showPaymentButton'] ? 'button--secondary' : 'button--primary').removeAttr('disabled').text(window.languages.addToCartLabel);
+        shopifyPaymentButton.show();
 
         // Otherwise, the product could be on sale
-        if (variant['compare_at_price'] > variant['price']) {
-          productMetaPrices.before('<span class="product-meta__price product-meta__price--new" data-money-convertible>' + Shopify.formatMoney(variant['price'], window.shop['moneyFormat']) + '</span>');
-          productMetaPrices.before('<span class="product-meta__price product-meta__price--old" data-money-convertible>' + Shopify.formatMoney(variant['compare_at_price'], window.shop['moneyFormat']) + '</span>');
+        if (newVariant['compare_at_price'] > newVariant['price']) {
+          productMetaPrices.before('<span class="product-meta__price product-meta__price--new" data-money-convertible>' + Shopify.formatMoney(newVariant['price'], window.shop['moneyFormat']) + '</span>');
+          productMetaPrices.before('<span class="product-meta__price product-meta__price--old" data-money-convertible>' + Shopify.formatMoney(newVariant['compare_at_price'], window.shop['moneyFormat']) + '</span>');
         } else {
-          productMetaPrices.before('<span class="product-meta__price" data-money-convertible>' + Shopify.formatMoney(variant['price'], window.shop['moneyFormat']) + '</span>');
+          productMetaPrices.before('<span class="product-meta__price" data-money-convertible>' + Shopify.formatMoney(newVariant['price'], window.shop['moneyFormat']) + '</span>');
         }
       }
 
       // If there is a special image, we need to change the featured image in the slideshow
-      if (variant['featured_image']) {
+      if (newVariant['featured_image']) {
         if (this.options['context'] === 'main') {
           var productSlideshow = this.element.find('.product__slideshow'),
             productSlideshowImages = productSlideshow.find('.product__slideshow-slide');
+        } else if (this.options['context'] === 'home') {
+          var productImage = this.element.find('.featured-product__image'),
+            aspectRatio = newVariant['featured_image']['width'] / newVariant['featured_image']['height'];
+
+          productImage.attr('data-sizes', 'auto')
+            .attr('data-widths', '[' + this._getSupportedSizes(newVariant['featured_image'], [200,300,400,600,800,900,1000]).join(',') + ']')
+            .attr('data-src', this._getSizedImageUrl(newVariant['featured_image']['src'], '1x1').replace('_1x1.', '_{width}x.'))
+            .addClass('lazyload');
+
+          productImage.parent('.aspect-ratio').css('padding-bottom', (100.0 / aspectRatio) + '%');
         } else {
           var productSlideshow = this.element.find('.quick-shop__slideshow'),
             productSlideshowImages = productSlideshow.find('.product__slideshow-slide');
         }
 
-        var itemToFind = productSlideshowImages.filter('[data-image-id="' + variant['featured_image']['id'] + '"]');
+        if (this.options['context'] !== 'home') {
+          var itemToFind = productSlideshowImages.filter('[data-image-id="' + newVariant['featured_image']['id'] + '"]');
+          productSlideshow.slick('slickGoTo', itemToFind.attr('data-index'));
+        }
 
-        productSlideshow.slick('slickGoTo', itemToFind.attr('data-index'));
       }
     } else {
       // This is an unavailable variant, so we need to disable the add to cart button and replace the price by
       // an unavailable label
       addToCartButton.removeClass('button--primary').addClass('button--secondary').attr('disabled', 'disabled').text(window.languages.unavailableLabel);
+      shopifyPaymentButton.hide();
     }
 
     {% if settings.currency_conversion_enabled %}
@@ -413,10 +545,45 @@
     {% endif %}
 
     // Just to let other people a way to add behaviour
-    $(document).trigger('variant.changed', variant);
+    $(document).trigger('variant.changed', newVariant);
   };
 
-  Plugin.prototype.addToCart = function(event) {
+  /**
+   * This call back is called whenever a property in one of the select or radio button has changed
+   */
+  Plugin.prototype._onSelectorChanged = function() {
+    var previousVariant = this.currentVariant;
+
+    this.currentVariant = this._getVariantFromOptions();
+    this._onVariantChanged(previousVariant, this.currentVariant);
+
+    if (this.currentVariant) {
+      if (this.options['enableHistoryState']) {
+        this._updateHistoryState(this.currentVariant);
+      }
+
+      // We need to modify the hidden select that contain the id attribute as well
+      this.masterSelector.find('[selected]').removeAttr('selected');
+      this.masterSelector.find('[value="' + this.currentVariant['id'] + '"]').attr('selected', 'selected');
+    }
+
+    // We also trigger an event so that other system can hookup and perform additional changes
+    $(document).trigger('variant.changed', this.currentVariant);
+  };
+
+  /**
+   * Update the HTML history state
+   */
+  Plugin.prototype._updateHistoryState = function(variant) {
+    if (!history.replaceState) {
+      return;
+    }
+
+    var newUrl = window.location.protocol + '//' + window.location.host + window.location.pathname + '?variant=' + variant.id;
+    window.history.replaceState({path: newUrl}, '', newUrl);
+  };
+
+  Plugin.prototype._addToCart = function(event) {
     var productForm = this.element.find('.product__form'),
       addToCartButton = productForm.find('.product__add-to-cart');
 
@@ -459,6 +626,92 @@
     });
 
     event.preventDefault();
+  };
+
+  /**
+   * Get the variant that is currently selected
+   */
+  Plugin.prototype._getVariantFromOptions = function() {
+    var selectedValues = this._getCurrentOptions();
+    var variants = this.product['variants'];
+    var found = false;
+
+    variants.forEach(function(variant) {
+      var satisfied = true;
+
+      selectedValues.forEach(function(option) {
+        if (satisfied) {
+          satisfied = (option.value === variant[option.index]);
+        }
+      });
+
+      if (satisfied) {
+        found = variant;
+      }
+    });
+
+    return found || null;
+  };
+
+  /**
+   * Extract all the current options
+   */
+  Plugin.prototype._getCurrentOptions = function() {
+    var currentOptions = this.singleOptionSelectors.toArray().map(function(element) {
+      var $element = $(element),
+        type = $element.attr('type'),
+        index = $element.attr('data-option-index');
+
+      if (type === 'radio' || type === 'checkbox') {
+        if ($element[0].checked) {
+          return {value: $element.val(), index: index};
+        } else {
+          return false;
+        }
+      } else {
+        return {value: $element.val(), index: index};
+      }
+    });
+
+    // remove any unchecked input values if using radio buttons or checkboxes
+
+    return currentOptions.filter(function(item) {
+      return item;
+    });
+  };
+
+  Plugin.prototype._getSizedImageUrl = function(src, size) {
+    if (size === null) {
+      return src;
+    }
+
+    if (size === 'master') {
+      return src.replace(/http(s)?:/, '');
+    }
+
+    const match = src.match(/\.(jpg|jpeg|gif|png|bmp|bitmap|tiff|tif)(\?v=\d+)?$/i);
+
+    if (match) {
+      const prefix = src.split(match[0]);
+      const suffix = match[0];
+
+      return (prefix[0] + '_' + size + suffix).replace(/http(s)?:/, '');
+    } else {
+      return null;
+    }
+  };
+
+  Plugin.prototype._getSupportedSizes = function(image, desiredSizes) {
+    var supportedSizes = [],
+      imageWidth = image['width'];
+
+    desiredSizes.forEach(function(width) {
+      if (imageWidth >= width) {
+        supportedSizes.push(width);
+      }
+    });
+
+    return supportedSizes;
   };
 
   $.fn[pluginName] = function(options) {
@@ -506,9 +759,6 @@
     return this.each(function(i) {
       if ($.inArray(i,new_index_array) === -1) {
         $(this).remove();
-      } else {
-        var image = $(this).find('img');
-        image.attr('src', image.attr('data-src'));
       }
     }).filter(function() {
       if (this.parentNode === null) {
@@ -808,14 +1058,14 @@ router.route('*all', function() {
       var element = $(this),
         item = element.closest('.navigation-horizontal__list-item');
 
-      item.toggleClass('navigation-horizontal__list-item--active');
-      item.siblings().removeClass('navigation-horizontal__list-item--active')
-        .find('.navigation-horizontal__dropdown-item--active').removeClass('navigation-horizontal__dropdown-item--active');
+      item.toggleClass('navigation-horizontal__list-item--active').attr('aria-expanded', function(index, attr) {return attr === 'true' ? 'false' : 'true'});
+      item.siblings().removeClass('navigation-horizontal__list-item--active').attr('aria-expanded', 'false')
+        .find('.navigation-horizontal__dropdown-item--active').removeClass('navigation-horizontal__dropdown-item--active').attr('aria-expanded', 'false');
 
       $(document).on('click', function(e) {
         if ($(e.target).closest('.navigation-horizontal').length === 0) {
-          item.removeClass('navigation-horizontal__list-item--active');
-          item.find('.navigation-horizontal__dropdown-item--active').removeClass('navigation-horizontal__dropdown-item--active');
+          item.removeClass('navigation-horizontal__list-item--active').attr('aria-expanded', 'false');
+          item.find('.navigation-horizontal__dropdown-item--active').removeClass('navigation-horizontal__dropdown-item--active').attr('aria-expanded', 'false');
 
           $(document).off('click');
         }
@@ -828,8 +1078,27 @@ router.route('*all', function() {
       var element = $(this),
         item = element.closest('.navigation-horizontal__dropdown-item');
 
-      item.toggleClass('navigation-horizontal__dropdown-item--active');
-      item.siblings().removeClass('navigation-horizontal__dropdown-item--active');
+      item.toggleClass('navigation-horizontal__dropdown-item--active').attr('aria-expanded', function(index, attr) {return attr === 'true' ? 'false' : 'true'});
+      item.siblings().removeClass('navigation-horizontal__dropdown-item--active').attr('aria-expanded', 'false');
+
+      // In order to avoid off-screen issues, we check all the children and if at least one goes off-screen, we open them on the left instead
+      var windowWidth = window.innerWidth,
+        rightEdge = element[0].getBoundingClientRect().right,
+        nestedMenus = item.closest('.navigation-horizontal__dropdown').find('.navigation-horizontal__dropdown'),
+        shouldOpenLeft = false;
+
+      nestedMenus.each(function(index, item) {
+        if ((rightEdge + item.offsetWidth) > windowWidth) {
+          shouldOpenLeft = true;
+          return false; // this allows to break from the each
+        }
+      });
+
+      if (shouldOpenLeft) {
+        nestedMenus.addClass('navigation-horizontal__dropdown--left');
+      } else {
+        nestedMenus.removeClass('navigation-horizontal__dropdown--left');
+      }
 
       return false;
     });
@@ -886,7 +1155,7 @@ router.route('*all', function() {
 
       currencySelector.val(Currency.currentCurrency).change(function() {
         var newCurrency = $(this).val();
-        Currency.convertAll(Currency.currentCurrency, newCurrency);
+        Currency.convertAll(shopCurrency, newCurrency);
 
         $('.selected-currency').text(Currency.currentCurrency);
       });
@@ -1028,18 +1297,60 @@ router.route('*all', function() {
    */
 
   (function() {
-    var popupModal = $('.marketing-popup');
+    var popupModalInstance = null;
 
-    if (popupModal.length === 0 || $.cookie('marketing_modal_seen') || Modernizr.mq('(max-width: 559px)')) {
-      return;
-    }
+    var initPopup = function(element) {
+      if (element.length === 0 || Modernizr.mq('(max-width: 559px)')) {
+        return;
+      }
 
-    setTimeout(function() {
-      // We save into the cookie in order to avoid annoying the user
-      popupModal.remodal({hashTracking: true}).open();
-      $.cookie('marketing_modal_seen', true, {expires: {{ settings.marketing_popup_remember_me | default: 0 }} });
-    }, {{ settings.marketing_popup_delay }});
+      popupModalInstance = element.remodal({
+        hashTracking: true,
+        appendTo: '#shopify-section-popup'
+      });
+
+      setTimeout(function() {
+        // We save into the cookie in order to avoid annoying the user
+        if (popupModalInstance.getState() === 'closed' && !$.cookie('theme_popup_seen') && element.attr('data-visible') === 'true') {
+          popupModalInstance.open();
+        }
+
+        $.cookie('theme_popup_seen', true, {expires: parseInt(element.attr('data-remember-me')) });
+      }, parseInt(element.attr('data-delay')));
+    };
+
+    initPopup($('.promotion-popup'), false);
+
+    $(document).on('shopify:section:select', '#shopify-section-popup', function() {
+      if (popupModalInstance && popupModalInstance.getState() !== 'opened') {
+        popupModalInstance.open();
+      }
+    });
+
+    $(document).on('shopify:section:deselect', '#shopify-section-popup', function() {
+      if (popupModalInstance) {
+        popupModalInstance.close();
+      }
+    });
+
+    $(document).on('shopify:section:load', '#shopify-section-popup', function(event) {
+      initPopup($(event.target).find('.promotion-popup'));
+    });
   })();
+
+  /**
+   * ----------------------------
+   * FEATURED MAP
+   * ----------------------------
+   */
+
+  (function() {
+    $('.featured-map').themeMap();
+
+    $(document).on('shopify:section:load', '.shopify-section__featured-map', function(event) {
+      $(event.target).find('.featured-map').themeMap();
+    });
+  }());
 
   /**
    * -------------------------
@@ -1110,18 +1421,7 @@ router.route('cart', function() {
     // We add one because Shopify uses 1-index numbering
     window.location.href = '/cart/change?quantity=' + parseInt($(this).val()) + '&line=' + lineIndex;
   });
-  
-  $(document).ready(function() {
-    $('body').on('click', '[name="checkout"], [name="goto_pp"], [name="goto_gc"]', function() {
-      if ($('#agree').is(':checked')) {
-        $(this).submit();
-      }
-      else {
-        alert("Please agree with the Terms and Conditions to continue to check out.");
-        return false;
-      }
-    });
-  });
+
   /**
    * -------------------------
    * SHIPPING ESTIMATOR
@@ -1212,7 +1512,7 @@ router.route('collections/*type', function() {
 
     body.on('change', '.collection-filter--sorter select', function () {
       Shopify.queryParams.sort_by = $(this).val();
-      location.search = decodeURIComponent($.param(Shopify.queryParams));
+      location.search = $.param(Shopify.queryParams);
     });
 
     if (location.search.length) {
@@ -1347,7 +1647,7 @@ router.route('', function() {
 
   (function() {
     var initInstagram = function(instagramAccessToken, limit) {
-      var instagramTemplate = {% raw %}'<div class="instagram__image-wrapper"><a href="{{link}}" target="_blank"><div class="instagram__overlay"><p class="instagram__caption">{{caption}}</p><time class="instagram__date">{{model.created_time}}</time></div><img class="instagram__image" src="{{image}}"/></a></div>';{% endraw %}
+      var instagramTemplate = {% raw %}'<div class="instagram__image-wrapper"><a href="{{link}}" data-bg="{{image}}" class="lazyload image--fade-in" target="_blank"><div class="instagram__overlay"><p class="instagram__caption">{{caption}}</p><time class="instagram__date">{{model.created_time}}</time></div></a></div>';{% endraw %}
 
       var formatInstagramDate = function(image) {
         var date = new Date(image.created_time * 1000);
@@ -1492,6 +1792,8 @@ var productRoute = function() {
               $(this).prev().removeClass('product__slideshow-image--zoomed');
             }
           });
+
+          currentSlide.attr('data-slide-initialized', true);
         }
       });
 
