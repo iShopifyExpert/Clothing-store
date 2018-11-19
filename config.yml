@@ -12,7 +12,7 @@ kagami-new:
 
 development:
   password: 8e3e0c6a29d76b972ef58b28d4163752
-  theme_id: "37249122390"
+  theme_id: "37263638614"
   store: thrift-test.myshopify.com
   timeout: 60s
 
