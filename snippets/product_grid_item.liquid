@@ -68,21 +68,6 @@
         <a href="{{ product.url | within: collection }}">{{ product.title }}</a>
       </h2>
 
-      {% for tag in product.tags %}
-      <!-- <p>Tag: <a href="/collections/all/{{ tag | handleize }}">{{ tag }}</a></p> -->
-      {% if tag contains 'Brand_' %}
-      <p>Brand: <a href="/collections/all/{{ tag | handleize }}">{{ tag | remove: "Brand_"}}</a></p>
-      {% endif %}
-      {% if tag contains 'Style_' %}
-      <p>Style: <a href="/collections/all/{{ tag | handleize }}">{{ tag | remove: "Style_"}}</a></p>
-      {% endif %}
-      {% if tag contains 'ThriftLoves_' %}
-      <div class="product-item__label label--thrift__wrapper">
-        <span class="label label--thrift_loves"></span>
-      </div>
-      {% endif %}
-      {% endfor %}
-
       {% if product_on_sale %}
       <span class="product-item__price product-item__price--new" data-money-convertible>{{ product.first_available_variant.price | money }}</span>
       <span class="product-item__price product-item__price--old" data-money-convertible>{{ product.first_available_variant.compare_at_price | money }}</span>
