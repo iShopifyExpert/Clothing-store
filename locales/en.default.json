@@ -124,9 +124,9 @@
     "general": {
       "view_details": "View Details",
       "loading_reviews": "Loading reviews...",
-      "add_to_cart": "Add to cart",
-      "adding_to_cart": "Adding to your cart...",
-      "added_to_cart": "Added to your cart!",
+      "add_to_cart": "Add to bag",
+      "adding_to_cart": "Adding to your bag...",
+      "added_to_cart": "Added to your bag!",
       "quantity": "Qty",
       "related_products": "Related Products",
       "sale_price": "Sale price",
