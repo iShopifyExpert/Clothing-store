@@ -104,12 +104,20 @@
 
         <section class="order__addresses grid grid--gallery">
           <div class="grid__cell 1/2--handheld-and-up">
-            {% include 'customer_address', address: order.billing_address, is_billing: true %}
+            <p>{{ 'customer.order.billing_address' | t }}</p>
+
+            <section class="account__address account__address--main">
+              {{ order.billing_address | format_address }}
+            </section>
           </div>
 
           {% if order.shipping_address %}
             <div class="grid__cell 1/2--handheld-and-up">
-              {% include 'customer_address', address: order.shipping_address, is_shipping: true %}
+              <p>{{ 'customer.order.shipping_address' | t }}</p>
+
+              <section class="account__address account__address--main">
+                {{ order.shipping_address | format_address }}
+              </section>
             </div>
           {% endif %}
         </section>
