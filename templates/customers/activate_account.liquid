@@ -15,7 +15,7 @@
         {% if form.errors %}
           <div class="alert alert--error">
             <span class="alert__title">{{ 'general.forms.errors' | t }}</span>
-            {% include 'form_errors' %}
+            {% include 'form-errors' %}
           </div>
         {% endif %}
 
@@ -31,11 +31,11 @@
 
         <div class="button-group">
           <div class="button-group__item">
-            <input type="submit" class="button button--secondary" name="decline" value="{{ 'customer.activate_account.cancel' | t }}">
+            <input type="submit" class="button button--primary" value="{{ 'customer.activate_account.submit' | t }}">
           </div>
 
           <div class="button-group__item">
-            <input type="submit" class="button button--primary" value="{{ 'customer.activate_account.submit' | t }}">
+            <input type="submit" class="button button--secondary" name="decline" value="{{ 'customer.activate_account.cancel' | t }}">
           </div>
         </div>
       {% endform %}

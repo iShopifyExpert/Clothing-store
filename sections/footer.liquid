@@ -1,9 +1,3 @@
-{% if section.settings.show_newsletter %}
-  {% unless template == 'index' and section.settings.show_newsletter_on_home_page == false %}
-    {% include 'newsletter' %}
-  {% endunless %}
-{% endif %}
-
 <footer class="footer" role="contentinfo">
   <div class="inner">
     <div class="footer__wrapper">
@@ -11,27 +5,27 @@
         {% case block.type %}
           {% when 'contact' %}
             <section class="footer__module footer__contact" {{ block.shopify_attributes }}>
-              <h3 class="footer__title">{{ 'layout.footer.contact_title' | t }}</h3>
+              <h3 class="footer__title">{{ block.settings.title | escape }}</h3>
 
               {% if block.settings.contact_phone != blank %}
-                <p class="footer__phone">{{ block.settings.contact_phone }}</p>
+                <p class="footer__phone">{{ block.settings.contact_phone | escape }}</p>
               {% endif %}
 
               {% if block.settings.contact_email != blank %}
                 <p class="footer__email">
-                  <a href="mailto:{{ block.settings.contact_email }}">{{ block.settings.contact_email }}</a>
+                  <a href="mailto:{{ block.settings.contact_email }}">{{ block.settings.contact_email | escape }}</a>
                 </p>
               {% endif %}
             </section>
 
           {% when 'social' %}
             {% capture footer_social_media %}
-              {% include 'social_networks', show_social_name: true %}
+              {% include 'social-networks', show_social_name: true %}
             {% endcapture %}
 
             {% if footer_social_media != blank %}
               <section class="footer__module footer__social" {{ block.shopify_attributes }}>
-                <h3 class="footer__title">{{ 'layout.footer.social_title' | t }}</h3>
+                <h3 class="footer__title">{{ block.settings.title | escape }}</h3>
                 {{ footer_social_media }}
               </section>
             {% endif %}
@@ -55,7 +49,13 @@
 
           {% when 'newsletter' %}
             <section class="footer__module footer__newsletter" {{ block.shopify_attributes }}>
-              <h3 class="footer__title">{{ 'layout.footer.newsletter_title' | t }}</h3>
+              <h3 class="footer__title">{{ block.settings.title | escape }}</h3>
+
+              {%- if block.settings.content != blank -%}
+                <div class="footer__content rte">
+                  {{ block.settings.content }}
+                </div>
+              {%- endif -%}
 
               {% assign footer_form_posted_successfully = false %}
               {% capture footer_form_action %}/contact#shopify-section-{{ section.id }}{% endcapture %}
@@ -93,21 +93,9 @@
       {% if section.settings.show_payment_methods %}
         <ul class="footer__payment-methods">
           {% for type in shop.enabled_payment_types %}
-            {% if type contains 'visa' %}<li class="footer__payment-method">{% include 'icon' with 'visa' %}</li>{% endif %}
-            {% if type contains 'master' %}<li class="footer__payment-method">{% include 'icon' with 'mastercard' %}</li>{% endif %}
-            {% if type contains 'american_express' %}<li class="footer__payment-method">{% include 'icon' with 'amex' %}</li>{% endif %}
-            {% if type contains 'dankort' %}<li class="footer__payment-method">{% include 'icon' with 'dk' %}</li>{% endif %}
-            {% if type contains 'jcb' %}<li class="footer__payment-method">{% include 'icon' with 'jcb' %}</li>{% endif %}
-            {% if type contains 'dogecoint' %}<li class="footer__payment-method">{% include 'icon' with 'dogecoin' %}</li>{% endif %}
-            {% if type contains 'discover' %}<li class="footer__payment-method">{% include 'icon' with 'discover' %}</li>{% endif %}
-            {% if type contains 'diners_club' %}<li class="footer__payment-method">{% include 'icon' with 'diners-club' %}</li>{% endif %}
-            {% if type contains 'maestro' %}<li class="footer__payment-method">{% include 'icon' with 'maestro' %}</li>{% endif %}
-            {% if type contains 'stripe' %}<li class="footer__payment-method">{% include 'icon' with 'stripe' %}</li>{% endif %}
-            {% if type contains 'paypal' %}<li class="footer__payment-method">{% include 'icon' with 'paypal' %}</li>{% endif %}
-            {% if type contains 'litecoin' %}<li class="footer__payment-method">{% include 'icon' with 'litecoin' %}</li>{% endif %}
-            {% if type contains 'bitcoin' %}<li class="footer__payment-method">{% include 'icon' with 'bitcoin' %}</li>{% endif %}
-            {% if type contains 'forbrugsforeningen' %}<li class="footer__payment-method">{% include 'icon' with 'forbrugsforeningen' %}</li>{% endif %}
-            {% if type contains 'apple_pay' %}<li class="footer__payment-method">{% include 'icon' with 'apple-pay' %}</li>{% endif %}
+            <li class="footer__payment-method">
+              {{ type | payment_type_svg_tag }}
+            </li>
           {% endfor %}
         </ul>
       {% endif %}
@@ -138,31 +126,6 @@
       "id": "show_back_to_top",
       "label": "Show back to top button",
       "default": true
-    },
-    {
-      "type": "header",
-      "content": "Newsletter"
-    },
-    {
-      "type": "paragraph",
-      "content": "Any customers who sign up will have an account created for them in Shopify. [View customers](/admin/customers?query=&accepts_marketing=1)."
-    },
-    {
-      "type": "paragraph",
-      "content": "You can sync your customers with a newsletter service by installing their app."
-    },
-    {
-      "type": "checkbox",
-      "id": "show_newsletter",
-      "label": "Show newsletter",
-      "default": true
-    },
-    {
-      "type": "checkbox",
-      "id": "show_newsletter_on_home_page",
-      "label": "Show newsletter on home page",
-      "info": "By disabling this option, you can use the dedicated home page newsletter section to display the newsletter in a different position",
-      "default": false
     }
   ],
   "blocks": [
@@ -171,6 +134,12 @@
       "name": "Contact info",
       "limit": 1,
       "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Heading",
+          "default": "Get in touch"
+        },
         {
           "type": "text",
           "id": "contact_phone",
@@ -191,6 +160,12 @@
         {
           "type": "paragraph",
           "content": "Make sure to have properly configured your social networks in the theme settings"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Heading",
+          "default": "Follow Us"
         }
       ]
     },
@@ -201,7 +176,8 @@
         {
           "type": "link_list",
           "id": "menu_linklist",
-          "label": "Menu"
+          "label": "Menu",
+          "info": "This menu won't show dropdown items."
         }
       ]
     },
@@ -217,6 +193,18 @@
         {
           "type": "paragraph",
           "content": "You can sync your customers with a newsletter service by installing their app."
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Heading",
+          "default": "Sign up for news"
+        },
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "Content",
+          "default": "<p>A short sentence describing what someone will receive by subscribing</p>"
         }
       ]
     }
