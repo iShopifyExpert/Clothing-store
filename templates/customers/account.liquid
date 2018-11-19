@@ -6,45 +6,30 @@
       <h1 class="page__title">{{ 'customer.account.title' | t }}</h1>
 
       <div class="page__action">
-        <a href="#start" class="button button--secondary">View my orders</a>
-      </div>
-      
-       <div class="page__action">
-        <a href="?view=rewards&amp;st_intent=st:core:home" class="button button--secondary">Redeem my credit</a>
-      </div>
-      
-      <div class="page__action">
-        <a href="/account/addresses" class="button button--secondary">Manage my addresses</a>
-      </div>
-      
-      <div class="page__action" id="start">
         <a href="/account/logout" class="button button--secondary">{{ 'customer.account.logout' | t }}</a>
       </div>
-      
     </div>
   </div>
 </header>
 
-<div class="page__content" >
+<div class="page__content">
   <div class="inner">
     <div class="grid grid--large">
-    
-      
       <section class="account__orders grid__cell 2/3--handheld-and-up">
         {% if customer.orders.size == 0 %}
           <div class="alert alert--error">
             <h3 class="alert__title">{{ 'customer.orders.none' | t }}</h3>
           </div>
         {% else %}
-          {% paginate customer.orders by 5 %}
+          {% paginate customer.orders by 50 %}
             <table class="table table--responsive">
               <thead>
                 <tr>
                   <th>{{ 'customer.orders.order_number' | t }}</th>
                   <th>{{ 'customer.orders.date' | t }}</th>
+                  <th>{{ 'customer.orders.payment_status' | t }}</th>
+                  <th>{{ 'customer.orders.fulfillment_status' | t }}</th>
                   <th>{{ 'customer.orders.total' | t }}</th>
-                  <th>Status</th>
-                  
                 </tr>
               </thead>
 
@@ -53,9 +38,9 @@
                   <tr>
                     <td data-label="{{ 'customer.orders.order_number' | t }}"><a href="{{ order.customer_url }}" class="link link--primary">{{ order.name }}</a></td>
                     <td data-label="{{ 'customer.orders.date' | t }}">{{ order.created_at | date: format: 'month_day_year' }}</td>
+                    <td data-label="{{ 'customer.orders.payment_status' | t }}">{{ order.financial_status_label }}</td>
+                    <td data-label="{{ 'customer.orders.fulfillment_status' | t }}">{{ order.fulfillment_status_label }}</td>
                     <td data-label="{{ 'customer.orders.total' | t }}">{{ order.total_price | money }}</td>
-                    <td data-label="{{ 'customer.orders.order_number' | t }}"><a href="{{ order.customer_url }}" class="link link--primary">Track</a></td>
-
                   </tr>
                 {% endfor %}
               </tbody>
@@ -84,7 +69,12 @@
         {% endif %}
       </section>
 
-      
+      <div class="grid__cell 1/3--handheld-and-up">
+        <section class="account__address account__address--main">
+          {{ customer.default_address | format_address }}
+          <a href="/account/addresses" class="link link--primary">{{ 'customer.account.manage_addresses' | t }} ({{ customer.addresses_count }})</a>
+        </section>
+      </div>
     </div>
   </div>
 </div>

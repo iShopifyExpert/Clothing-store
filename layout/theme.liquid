@@ -17,19 +17,15 @@
 
     <link rel="canonical" href="{{ canonical_url }}">
 
-    {% comment %} We preconnect of two popular domains (Shopify CDN and Google Font) to speed up performance {% endcomment %}
-    <link rel="preconnect" href="//cdn.shopify.com" crossorigin>
-    <link rel="preconnect" href="//fonts.gstatic.com" crossorigin>
-
     {% if settings.favicon %}
       <link rel="shortcut icon" href="{{ settings.favicon | img_url: '32x32' }}" type="image/png">
     {% endif %}
 
-    {% include 'social_meta_tags' %}
-    {% include 'google_fonts' %}
+    {% include 'social-meta-tags' %}
 
     {{ content_for_header }}
 
+    <script src="{{ 'lazysizes.min.js' | asset_url }}" async></script>
     {{ 'theme.scss.css' | asset_url | stylesheet_tag }}
     {{ 'new-design-styles.scss.css' | asset_url | stylesheet_tag }}
 
@@ -65,6 +61,7 @@
       }
     </script>
 
+<<<<<<< HEAD
     {% include 'microdata_schema' %}
   {% include 'sca-quick-view-init' %}
 
@@ -75,20 +72,25 @@
   {% include 'bc-sf-filter-style' %}
 <!--end-bc-sf-filter-css-->
 </head>
+=======
+    {% include 'microdata-schema' %}
+  </head>
+>>>>>>> kagami
 
 
   {% assign template_handle = template | replace: '.', ' ' | truncatewords: 1, '' | handle %}
 
-
-<body class="kagami--v4 template-{{ template_handle }} {% if page.template_suffix != blank %}template-{{ template_handle }}-{{page.template_suffix}}{% endif %}">
-    {% include 'svg_icons' %}
+  <body class="kagami--v6 template-{{ template_handle }} {% if page.template_suffix != blank %}template-{{ template_handle }}-{{page.template_suffix}}{% endif %}">
+    {% include 'svg-icons' %}
 
     <div class="page__overlay"></div>
 
     <div class="drawers">
-      {% include 'mini_cart' %}
-      {% include 'navigation_sidebar' %}
+      {% include 'mini-cart' %}
+      {% include 'navigation-sidebar' %}
     </div>
+
+    {% section 'popup' %}
 
     <div class="page__container {% if use_secondary_background %}page__container--secondary{% endif %}">
       {% section 'announcement' %}
@@ -98,14 +100,9 @@
         {{ content_for_layout }}
       </main>
 
-      {% if template != 'index' and settings.newsletter_always_display %}
-        {% include 'newsletter' %}
-      {% endif %}
-
+      {% section 'newsletter' %}
       {% section 'footer' %}
     </div>
-
-    {% include 'popup' %}
 
     {% comment %}This is an empty modal this is used to display the quick shop{% endcomment %}
     <div class="quick-shop modal modal--large remodal">
@@ -130,11 +127,10 @@
       {{ 'shopify_common.js' | shopify_asset_url | script_tag }}
     {% endif %}
 
-    {{ 'option_selection.js' | shopify_asset_url | script_tag }}
-
-    {{ '//cdn.polyfill.io/v2/polyfill.min.js?features=String.prototype.trim,Object.keys,Array.prototype.map,Array.prototype.forEach' | script_tag }}
+    {{ '//cdn.polyfill.io/v2/polyfill.min.js?features=String.prototype.trim,Object.keys,Array.prototype.map,Array.prototype.forEach,Array.prototype.find' | script_tag }}
     {{ 'libs.js' | asset_url | script_tag }}
     {{ 'script.js' | asset_url | script_tag }}
+<<<<<<< HEAD
     {{ 'custom-script.js' | asset_url | script_tag }}
 
     <!--[if IE 9]>
@@ -220,4 +216,7 @@
         </script>
         <!-- End-MakeAnOffer -->
 
+=======
+  </body>
+>>>>>>> kagami
 </html>

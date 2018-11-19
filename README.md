@@ -1,1 +1,1 @@
-# Thrift-Theme
+# Clothing-store-Theme
