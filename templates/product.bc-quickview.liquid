@@ -14,7 +14,7 @@
 {% if bc_settings contains 'qvQuantity' %}
 {% assign quantity_label = bc_settings | split: 'qvQuantity":' | last | split: ',' | first | replace: '"', '' | strip %}
 {% endif %}
-{% assign add_to_cart_btn_label = 'Add To Cart' %}
+{% assign add_to_cart_btn_label = 'Add To Bag' %}
 {% if bc_settings contains 'qvAddToCartBtnLabel' %}
 {% assign add_to_cart_btn_label = bc_settings | split: 'qvAddToCartBtnLabel":' | last | split: ',' | first | replace: '"', '' | strip %}
 {% endif %}

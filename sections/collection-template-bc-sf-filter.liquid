@@ -1,22 +1,12 @@
 {% assign products_per_page = section.settings.products_per_page %}
 {% paginate collection.products by products_per_page %}
-{% comment %} TOOLBAR {% endcomment %}
-<div id="bc-sf-filter-default-toolbar">
-    <div class="bc-sf-filter-default-toolbar-inner">
-      <div class="bc-sf-filter-toolbar-item">
-        <div id="bc-sf-filter-top-display-type"></div>
-      </div>
-      <div class="bc-sf-filter-toolbar-item bc-sf-filter-toolbar-count">
-        <span id="bc-sf-filter-total-product"></span>
-      </div>
-      <div class="bc-sf-filter-toolbar-item text-right" id="bc-sf-filter-top-sorting"></div>
-    </div>
-</div>
-{% comment %} END TOOLBAR {% endcomment %}
+
 <div id="bc-sf-filter-wrapper">
   <div id="bc-sf-filter-tree-mobile"></div>
   <div class="bc-sf-filter-left-col">
-    <div id="bc-sf-filter-tree"></div>
+    <h2 class="bc-sf-filter-left-col-title">Filter items</h2>
+    <div id="bc-sf-filter-tree">
+    </div>
   </div>
   <div class="bc-sf-filter-right-col">
     <div id="bc-sf-filter-products" data-bc-sort="{{ collection.default_sort_by }}">
@@ -27,12 +17,13 @@
     <div id="bc-sf-filter-bottom-pagination" class="bc-sf-filter-bottom-pagination-default"></div>
     <div id="bc-sf-filter-load-more"></div>
   </div>
+
 </div>
 
-{% comment %} start-bc-most-popular-template {% endcomment %}    
+{% comment %} start-bc-most-popular-template {% endcomment %}
   <div class="bc-sf-most-popular-products-wrapper bc-sf-widget-slider-wrapper">
     <div class="bc-sf-most-popular-products bc-sf-widget-products owl-carousel"></div>
-  </div>        
+  </div>
 {% comment %} end-bc-most-popular-template {% endcomment %}
 
 {% comment %} start-bc-recently-viewed-template {% endcomment %}
