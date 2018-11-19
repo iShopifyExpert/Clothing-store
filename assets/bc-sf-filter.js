@@ -17,7 +17,7 @@ var bcSfFilterTemplate = {
     'saleClass': ' on-sale',
     'soldOutLabelHtml': '<span class="soldout bc-sf-filter-label">' + bcSfFilterConfig.label_basic.sold_out + '</span>',
     'saleLabelHtml': '<span class="sale bc-sf-filter-label">' + bcSfFilterConfig.label_basic.sale + '</span>',
-    'tagLabelHtml': '<span class="tag bc-sf-filter-label {{labelTag}}" >{{labelTag}}</span>',
+    'tagLabelHtml': '<span class="bc-sf-filter-product-item-tags {{labelTag}}">{{labelTag}}</span><span> </span>',
     'vendorHtml': '<p class="bc-sf-filter-product-item-vendor">{{itemVendorLabel}}</p>',
     // Grid Template
     'productGridItemHtml': '<div class="bc-sf-filter-product-item bc-sf-filter-product-item-grid {{gridWidthClass}}{{soldOutClass}}{{saleClass}} {{itemActiveSwapClass}}">' +
@@ -26,10 +26,10 @@ var bcSfFilterTemplate = {
                                     '<div class="bc-sf-filter-product-item-image">' +
                                         '<a href="{{itemUrl}}" class="bc-sf-filter-product-item-image-link">{{itemImages}}</a>' +
                                     '</div>' +
-                                    '<div class="bc-sf-filter-product-item-label">{{itemLabels}}{{itemTagLabels}}</div>' +
+                                    '<div class="bc-sf-filter-product-item-label">{{itemLabels}}</div>' +
                                     '<div class="bc-sf-filter-product-bottom">' +
                                         '<a href="{{itemUrl}}" class="bc-sf-filter-product-item-title">{{itemTitle}}</a>' +
-                                        '{{itemVendor}}' +
+                                        '{{itemVendor}} ' + '<p class="bc-sf-filter-product-item-tags">{{itemTagLabels}}</p>' +
                                         '{{itemPrice}}' +
                                     '</div>' +
                                 '</div>' +
@@ -39,7 +39,7 @@ var bcSfFilterTemplate = {
     'productListItemHtml': '<div class="bc-sf-filter-product-item bc-sf-filter-product-item-list {{soldOutClass}}{{saleClass}} {{itemActiveSwapClass}}">' +
                                 '<div class="bc-sf-filter-product-item-list-col-1">' +
                                     '<div class="bc-sf-filter-product-item-image">' +
-                                        '<div class="bc-sf-filter-product-item-label">{{itemLabels}}{{itemTagLabels}}</div>' +
+                                        '<div class="bc-sf-filter-product-item-label">{{itemLabels}}</div>' +
                                         '<a href="{{itemUrl}}" class="bc-sf-filter-product-item-image-link">{{itemImages}}</a>' +
                                     '</div>' +
                                 '</div>' +
@@ -115,7 +115,7 @@ BCSfFilter.prototype.buildProductGridItem = function(data, index) {
   // Add Label
   itemHtml = itemHtml.replace(/{{itemLabels}}/g, buildLabels(data));
   // Add TAG Label
-  itemHtml = itemHtml.replace(/{{itemTagLabels}}/g, buildTagLabels(data, false));
+  itemHtml = itemHtml.replace(/{{itemTagLabels}}/g, buildTagLabels(data, true));
   // Add Images
   itemHtml = itemHtml.replace(/{{itemImages}}/g, buildImages(data));
   // Add Price
@@ -134,6 +134,7 @@ BCSfFilter.prototype.buildProductGridItem = function(data, index) {
     "handle": data.handle,
     "vendor": data.vendor,
     "variants": data.variants,
+    "tags": data.tags,
     "url": self.buildProductItemUrl(data),
     "options_with_values": data.options_with_values,
     "images": data.images,
@@ -150,6 +151,7 @@ BCSfFilter.prototype.buildProductGridItem = function(data, index) {
   itemHtml = itemHtml.replace(/{{itemTitle}}/g, data.title);
   itemHtml = itemHtml.replace(/{{itemHandle}}/g, data.handle);
   itemHtml = itemHtml.replace(/{{itemVendorLabel}}/g, data.vendor);
+  itemHtml = itemHtml.replace(/{{itemTagLabels}}/g, data.tags);
   itemHtml = itemHtml.replace(/{{itemUrl}}/g, this.buildProductItemUrl(data));
   return itemHtml;
 };
@@ -190,7 +192,7 @@ BCSfFilter.prototype.buildProductListItem = function(data) {
   // Add Label
   itemHtml = itemHtml.replace(/{{itemLabels}}/g, buildLabels(data));
   // Add TAG Label
-  itemHtml = itemHtml.replace(/{{itemTagLabels}}/g, buildTagLabels(data, false));
+  itemHtml = itemHtml.replace(/{{itemTagLabels}}/g, buildTagLabels(data));
   // Add Images
   itemHtml = itemHtml.replace(/{{itemImages}}/g, buildImages(data));
   // Add Vendor
@@ -306,9 +308,19 @@ function buildTagLabels(data, showall) {
     if (data.tags) {
       for (var i = 0; i < data.tags.length; i++) {
         var tag = data.tags[i];
-        if (tag.indexOf("pfs:label") !== -1) {
-          var preTagLabel = bcSfFilterTemplate.tagLabelHtml.replace(/{{labelTag}}/g, tag.split('pfs:label-')[1]);
+        if (tag.indexOf("Style_") !== -1) {
+          var preTagLabel = bcSfFilterTemplate.tagLabelHtml.replace(/{{labelTag}}/g, tag.split('Style_')[1]);
           tagLabel += preTagLabel;
+        }
+        else if(tag.indexOf("Brand_") !== -1){
+          var preTagLabel = bcSfFilterTemplate.tagLabelHtml.replace(/{{labelTag}}/g, tag.split('Brand_')[1]);
+          tagLabel += preTagLabel;
+        }
+        else if(tag.indexOf("ThriftLoves_") !== -1){
+          var preTagLabel = bcSfFilterTemplate.tagLabelHtml.replace(/{{labelTag}}/g, tag.split('ThriftLoves_')[1]);
+          tagLabel += preTagLabel;
+          // $( ".bc-sf-filter-product-item-label" ).addClass('label label--thrift_loves');
+          // console.log(tag.split('ThriftLoves_')[1])
         }
       }
     }

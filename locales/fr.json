@@ -31,7 +31,9 @@
       "search_placeholder": "Rechercher..."
     },
     "newsletter": {
+      "title": "Inscrivez-vous à notre newsletter",
       "title_success": "Merci !",
+      "subtitle": "Et soyez les premiers informés !",
       "subtitle_success": "Nous vous tiendrons informés de notre activité !",
       "input_placeholder": "Votre email...",
       "submit": "S'inscrire"
@@ -42,6 +44,9 @@
       "submit": "Rejoignez nous"
     },
     "footer": {
+      "contact_title": "Nous contacter",
+      "social_title": "Nous suivre",
+      "newsletter_title": "S'inscrire à la newsletter",
       "newsletter_placeholder": "Adresse email",
       "newsletter_submit": "Soumettre",
       "newsletter_success": "Votre email a été enregistré !",
@@ -100,8 +105,7 @@
       "from_price_html": "A partir de <span data-money-convertible>{{price}}<\/span>"
     },
     "filters": {
-      "filter": "Filtrer",
-      "all_products": "Tous les produits",
+      "no_tag_selected": "Tous les tags",
       "no_type_selected": "Tous les types",
       "no_vendor_selected": "Toutes les marques"
     },
@@ -311,7 +315,7 @@
       "left_balance": "restant",
       "disabled": "Désactivée",
       "expired": "Expirée le {{ expiry }}",
-      "expires_on": "Expire le {{ expiry }}",
+      "active": "Expire le {{ expiry }}",
       "redeem": "Entrez ce code lors du paiement pour utiliser votre carte-cadeau",
       "shop_link": "Boutique",
       "print": "Imprimer"

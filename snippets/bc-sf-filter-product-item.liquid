@@ -112,6 +112,19 @@
             <p class="bc-sf-filter-product-item-vendor">{{ product.vendor }}</p>
           {% endif %}
 
+          <p class="bc-sf-filter-product-item-tags">
+            {% for tag in product.tags %}
+              {% if tag contains 'Brand_' or tag contains 'Style_' %}
+                {{ tag | remove: 'Brand_' | remove: 'Style_' }}
+              {% endif %}
+              {% if tag contains 'ThriftLoves' %}
+                <div class="product-item__label label--thrift__wrapper">
+                  <span class="label label--thrift_loves"></span>
+                </div>
+              {% endif %}
+            {% endfor %}
+          </p>
+
           {% if section.settings.show_price %}
             <p class="bc-sf-filter-product-item-price">
               {% if on_sale %}
@@ -126,5 +139,6 @@
             </p>
           {% endif %}
         </div>
+
     </div>
 </div>

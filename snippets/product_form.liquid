@@ -15,19 +15,21 @@
     {% endif %}
   </div>
 
-  <div class="product__buy">
-    
+  <div class="product__buy product__button">
+
 
     {% if product.selected_or_first_available_variant.available %}
       <button type="submit" class="button button--primary button--no-disabled-opacity product__add-to-cart" {% if settings.cart_page != 'page' %}data-action="add-to-cart"{% endif %}>{{ 'product.general.add_to_cart' | t }}</button>
     {% else %}
       <button type="submit" class="button button--secondary button--no-disabled-opacity product__add-to-cart" disabled="disabled">{{ 'product.labels.sold_out' | t }}</button>
     {% endif %}
-    
+
   </div>
-  
+
+  <div class="product__offer product__button">
+
+      <button type="submit" class="button button--secondary button--no-disabled-opacity product__add-to-cart"> Make and offer </button>
+
+  </div>
+
 </form>
-
-
-
-		

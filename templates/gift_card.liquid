@@ -37,7 +37,7 @@
 
         {% if gift_card.expires_on %}
           {% capture expiry_date %}{{ gift_card.expires_on | date: format: 'month_day_year' }}{% endcapture %}
-          {{ 'gift_cards.issued.expires_on' | t: expiry: expiry_date }}
+          <!––{{ 'gift_cards.issued.expires' | t: expiry: expiry_date }}––>
         {% endif %}
       </p>
 

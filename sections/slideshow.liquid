@@ -1,7 +1,7 @@
 <section class="index-module slideshow"
          data-autoplay="{{ section.settings.autoplay }}"
          data-animation-type="{{ section.settings.animation_type }}"
-         data-cycle-speed="{{ section.settings.cycle_speed | times: 1000 }}">
+         data-cycle-speed="{{ section.settings.cycle_speed }}">
   <div class="slideshow__slides">
     {% for block in section.blocks %}
       {% if block.settings.button_text != blank %}
@@ -10,24 +10,16 @@
         {% assign has_slideshow_button = false %}
       {% endif %}
 
-      <div class="slideshow__slide {% if section.settings.increase_contrast %}slideshow__slide--contrasted{% endif %}"
-           data-slide-index="{{ forloop.index0 }}" {{ block.shopify_attributes }}
-           style="{% unless forloop.first %}display: none;{% endunless %} {% if block.settings.image %}background: url({{ block.settings.image | img_url: '1x1', format: 'jpg' }}){% endif %}">
+      <div class="slideshow__slide {% if section.settings.increase_contrast %}slideshow__slide--contrasted{% endif %}" data-slide-index="{{ forloop.index0 }}" {{ block.shopify_attributes }} style="{% unless forloop.first %}display: none;{% endunless %}">
         {% if block.settings.button_text == blank and block.settings.link != blank %}
           <a href="{{ block.settings.link }}">
         {% endif %}
 
         {% if block.settings.image %}
-          {% include 'image-size', sizes: '400,600,800,900,1000,1200,1400,1600,1800', image: block.settings.image %}
-          {% assign image_url = block.settings.image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' %}
-
-          <div class="aspect-ratio" style="padding-bottom: {{ 100.0 | divided_by: block.settings.image.aspect_ratio }}%">
-            <img class="slideshow__image lazyload image--fade-in" data-widths="[{{ supported_sizes }}]" data-sizes="auto" data-src="{{ image_url }}" alt="{{ block.settings.image.alt }}">
-
-            <noscript>
-              <img class="slideshow__image" src="{{ block.settings.image | img_url: '1200x' }}" alt="{{ block.settings.image.alt }}">
-            </noscript>
-          </div>
+          <img class="slideshow__image"
+               src="{{ block.settings.image | img_url: '1024x', format: 'pjpg' }}"
+               srcset="{{ block.settings.image | img_url: '600x', format: 'pjpg' }} 600w, {{ block.settings.image | img_url: '1024x', format: 'pjpg' }} 1024w, {{ block.settings.image | img_url: '1800x', format: 'pjpg' }} 1800w"
+               alt="{{ block.settings.image.alt }}">
         {% else %}
           {% capture current %}{% cycle 1, 2 %}{% endcapture %}
           {{ 'lifestyle-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}
@@ -107,14 +99,32 @@
       "default": "slide"
     },
     {
-      "type": "range",
+      "type": "select",
       "id": "cycle_speed",
-      "min": 3,
-      "max": 10,
-      "step": 1,
-      "unit": "sec",
-      "label": "Change slides every",
-      "default": 5
+      "label": "Rotation interval",
+      "options": [
+        {
+          "value": "2000",
+          "label": "2 seconds"
+        },
+        {
+          "value": "4000",
+          "label": "4 seconds"
+        },
+        {
+          "value": "6000",
+          "label": "6 seconds"
+        },
+        {
+          "value": "8000",
+          "label": "8 seconds"
+        },
+        {
+          "value": "12000",
+          "label": "12 seconds"
+        }
+      ],
+      "default": "4000"
     }
   ],
   "blocks": [
@@ -181,7 +191,7 @@
       "settings": {
         "autoplay": true,
         "animation_type": "slide",
-        "cycle_speed": 5
+        "cycle_speed": "6000"
       },
       "blocks": [
         {
