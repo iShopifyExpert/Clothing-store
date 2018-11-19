@@ -135,6 +135,7 @@
     {{ '//cdn.polyfill.io/v2/polyfill.min.js?features=String.prototype.trim,Object.keys,Array.prototype.map,Array.prototype.forEach' | script_tag }}
     {{ 'libs.js' | asset_url | script_tag }}
     {{ 'script.js' | asset_url | script_tag }}
+    {{ 'ssm.min.js' | asset_url | script_tag }}
     {{ 'custom-script.js' | asset_url | script_tag }}
 
     <!--[if IE 9]>
@@ -153,6 +154,11 @@
 <!-- Cookies banner code end -->
 
  {% include 'smile-initializer' %}
+
+<!--Add report an issue button-->
+ {% if template contains 'collection' %}
+   {% include 'report_issue' %}
+ {% endif %}
 
 <!--begin-bc-sf-filter-js-->
   {% include 'bc-sf-filter' %}
