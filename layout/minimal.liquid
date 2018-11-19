@@ -17,16 +17,11 @@
 
     <link rel="canonical" href="{{ canonical_url }}">
 
-    {% comment %} We preconnect of two popular domains (Shopify CDN and Google Font) to speed up performance {% endcomment %}
-    <link rel="preconnect" href="//cdn.shopify.com" crossorigin>
-    <link rel="preconnect" href="//fonts.gstatic.com" crossorigin>
-
     {% if settings.favicon %}
       <link rel="shortcut icon" href="{{ settings.favicon | img_url: '32x32' }}" type="image/png">
     {% endif %}
 
-    {% include 'social_meta_tags' %}
-    {% include 'google_fonts' %}
+    {% include 'social-meta-tags' %}
 
     {{ content_for_header }}
 
@@ -43,14 +38,12 @@
         collectionSortBy: {{ collection.sort_by | default: collection.default_sort_by | json }}
       };
     </script>
-  
-  {% include 'shogun-head' %}
-</head>
+  </head>
 
   {% assign template_handle = template | replace: '.', ' ' | truncatewords: 1, '' | handle %}
 
-  <body class="focal kagami--v4 template-{{ template_handle }} {% if page.template_suffix != blank %}template-{{ template_handle }}-{{page.template_suffix}}{% endif %}">
-    {% include 'svg_icons' %}
+  <body class="focal kagami--v5 template-{{ template_handle }} {% if page.template_suffix != blank %}template-{{ template_handle }}-{{page.template_suffix}}{% endif %}">
+    {% include 'svg-icons' %}
 
     <div class="page__overlay"></div>
 

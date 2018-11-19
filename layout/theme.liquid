@@ -17,19 +17,15 @@
 
     <link rel="canonical" href="{{ canonical_url }}">
 
-    {% comment %} We preconnect of two popular domains (Shopify CDN and Google Font) to speed up performance {% endcomment %}
-    <link rel="preconnect" href="//cdn.shopify.com" crossorigin>
-    <link rel="preconnect" href="//fonts.gstatic.com" crossorigin>
-
     {% if settings.favicon %}
       <link rel="shortcut icon" href="{{ settings.favicon | img_url: '32x32' }}" type="image/png">
     {% endif %}
 
-    {% include 'social_meta_tags' %}
-    {% include 'google_fonts' %}
+    {% include 'social-meta-tags' %}
 
     {{ content_for_header }}
 
+    <script src="{{ 'lazysizes.min.js' | asset_url }}" async></script>
     {{ 'theme.scss.css' | asset_url | stylesheet_tag }}
 
     <script>
@@ -64,26 +60,22 @@
       }
     </script>
 
-    {% include 'microdata_schema' %}
-  {% include 'sca-quick-view-init' %}
- 
-  {% include 'shogun-head' %}
-{% include 'collection-filter-v2' %}
-    
-</head>
+    {% include 'microdata-schema' %}
+  </head>
 
   {% assign template_handle = template | replace: '.', ' ' | truncatewords: 1, '' | handle %}
 
-
-<body class="kagami--v4 template-{{ template_handle }} {% if page.template_suffix != blank %}template-{{ template_handle }}-{{page.template_suffix}}{% endif %}">
-    {% include 'svg_icons' %}
+  <body class="kagami--v6 template-{{ template_handle }} {% if page.template_suffix != blank %}template-{{ template_handle }}-{{page.template_suffix}}{% endif %}">
+    {% include 'svg-icons' %}
 
     <div class="page__overlay"></div>
 
     <div class="drawers">
-      {% include 'mini_cart' %}
-      {% include 'navigation_sidebar' %}
+      {% include 'mini-cart' %}
+      {% include 'navigation-sidebar' %}
     </div>
+
+    {% section 'popup' %}
 
     <div class="page__container {% if use_secondary_background %}page__container--secondary{% endif %}">
       {% section 'announcement' %}
@@ -93,14 +85,9 @@
         {{ content_for_layout }}
       </main>
 
-      {% if template != 'index' and settings.newsletter_always_display %}
-        {% include 'newsletter' %}
-      {% endif %}
-
+      {% section 'newsletter' %}
       {% section 'footer' %}
     </div>
-
-    {% include 'popup' %}
 
     {% comment %}This is an empty modal this is used to display the quick shop{% endcomment %}
     <div class="quick-shop modal modal--large remodal">
@@ -125,86 +112,8 @@
       {{ 'shopify_common.js' | shopify_asset_url | script_tag }}
     {% endif %}
 
-    {{ 'option_selection.js' | shopify_asset_url | script_tag }}
-
-    {{ '//cdn.polyfill.io/v2/polyfill.min.js?features=String.prototype.trim,Object.keys,Array.prototype.map,Array.prototype.forEach' | script_tag }}
+    {{ '//cdn.polyfill.io/v2/polyfill.min.js?features=String.prototype.trim,Object.keys,Array.prototype.map,Array.prototype.forEach,Array.prototype.find' | script_tag }}
     {{ 'libs.js' | asset_url | script_tag }}
     {{ 'script.js' | asset_url | script_tag }}
-
-    <!--[if IE 9]>
-      {{ 'polyfills-ie9.js' | asset_url | script_tag }}
-    <![endif]-->
-  {% include 'sca-quick-view-template' %} 
- 
-{% include 'swymSnippet' %}
-
-<!-- BEEKETINGSCRIPT CODE START -->{% include 'bk-tracking' %}<!-- BEEKETINGSCRIPT CODE END --><!-- Start of HubSpot Embed Code -->
-  <script type="text/javascript" id="hs-script-loader" async defer src="//js.hs-scripts.com/4516313.js"></script>
-<!-- End of HubSpot Embed Code -->
-  
-<!-- Cookies banner code start -->  
-{% include 'shopifyexplorer-cookies-banner' %}
-<!-- Cookies banner code end --> 
-
- 
-
- 
-
- 
-
- {% include 'smile-initializer' %}
-
-</body>
-<!-- Start-MakeAnOffer version: 5 -->
-        <script>
-          var makeAnOfferData = (function() {
-            var data = {
-              product: null,
-              cartProducts: [],
-            };
-
-            {% if product %}
-              data.product = (function() {
-                var mf_featured_image = "{{ product.selected_or_first_available_variant.featured_image | default: product.featured_image | img_url: '1024x1024'}}";
-                var mf_other_image = "{{ product.images.first | img_url: '1024x1024' }}";
-                return {
-                  title: {{ product.title | json }},
-                  price: "{{ product.price | money_without_currency }}",
-                  currency: "{{ shop.money_format }}",
-                  image: mf_featured_image || mf_other_image,
-                  variants: {{ product.variants | json }},
-                  tags: {{ product.tags | json }},
-                  collections: {{ product.collections | json }},
-                  url: "{{ product.url | within: collections.all }}",
-                  available: {{ product.available }}
-                }
-              })();
-            {% endif %}
-
-            {% if cart.items.size > 0 %}
-              {% for item in cart.items %}
-                data.cartProducts.push(function() {
-                  return {
-                    title: {{ item.title | json }},
-                    price: "{{ item.price | money }}",
-                    image: "{{ item | img_url: '1024x1024' }}",
-                    variants: {{ item.variants | json }},
-                    url: "{{ item.url | within: collections.all }}",
-                    sku: "{{ item.sku }}",
-                    tags: {{ item.product.tags | json }},
-                    collections: {{ item.product.collections | json }},
-                    available: {{ item.product.available }}
-                  }
-                }());
-              {% endfor %}
-            {% endif %}
-
-            return data;
-          })();
-
-        </script>
-        <!-- End-MakeAnOffer -->
-
+  </body>
 </html>
-
-        
