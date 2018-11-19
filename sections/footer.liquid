@@ -7,6 +7,14 @@
 <footer class="footer" role="contentinfo">
   <div class="inner">
     <div class="footer__wrapper">
+      <div class="footer__item footer__item-logo">
+        <div class="footer__logo">
+          <a href="{{ shop.url }}" class="footer__link">
+            <img src="{{ 'logo_inverted-thrift.png' | asset_img_url: '200x'}}" alt="Thrift logo" />
+          </a>
+        </div>
+      </div>
+
       {% for block in section.blocks %}
         {% case block.type %}
           {% when 'contact' %}
@@ -87,7 +95,7 @@
     <div class="inner">
       <p class="footer__copyright">
         {% capture shop_copyright %}<a href="/">{{ shop.name }}</a>{% endcapture %}
-        {{ 'layout.footer.copyright_html' | t: shop_copyright: shop_copyright }} / {{ powered_by_link }}
+        {{ 'layout.footer.copyright_html' | t: shop_copyright: shop_copyright }} 
       </p>
 
       {% if section.settings.show_payment_methods %}

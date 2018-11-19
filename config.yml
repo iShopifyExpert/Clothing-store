@@ -6,7 +6,7 @@ live:
 
 development:
   password: 8e3e0c6a29d76b972ef58b28d4163752
-  theme_id: "37250891862"
+  theme_id: "37249122390"
   store: thrift-test.myshopify.com
   timeout: 60s
 
@@ -14,4 +14,10 @@ feature-filter:
   password: 8e3e0c6a29d76b972ef58b28d4163752
   theme_id: "37252071510"
   store: thrift-test.myshopify.com
+  timeout: 60s
+
+dev-noemi:
+  password: 946b5b0edfebca51dc14d05ba8ba3857
+  theme_id: "37252694065"
+  store: noemi-test.myshopify.com
   timeout: 60s
