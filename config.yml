@@ -6,7 +6,11 @@ live:
 
 kagami-new:
   password: 8e3e0c6a29d76b972ef58b28d4163752
+<<<<<<< HEAD
   theme_id: "37263442006"
+=======
+  theme_id: "37263343702"
+>>>>>>> fb0e841996f5581ad48a11289564485ea465ef29
   store: thrift-test.myshopify.com
   timeout: 60s
 
