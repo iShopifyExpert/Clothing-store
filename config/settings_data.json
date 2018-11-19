@@ -41,7 +41,7 @@
     "navigation_menu": "main-menu",
     "navigation_mode": "horizontal",
     "navigation_sidebar_image": "",
-    "navigation_horizontal_mega_nav": "shop",
+    "navigation_horizontal_mega_nav": "",
     "navigation_horizontal_image": "shopify:\/\/shop_images\/Screen_Shot_2017-03-30_at_18.56.05_31a33cae-47be-4c81-a104-45da50111525.png",
     "navigation_horizontal_switch_image": false,
     "search_mode": "product",
@@ -178,7 +178,7 @@
           "1489781569427": {
             "type": "global_tab",
             "settings": {
-              "page": "delivery"
+              "page": "easy-returns"
             }
           },
           "1489781606918": {
